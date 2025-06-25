@@ -17,9 +17,17 @@ class GPUManager():
     https://github.com/QuantumLiu/tf_gpu_manager
     """
     def __init__(self, gpu_available=False, specified_device=-1):
-        self.gpu_avaiable = gpu_available and check_gpus()
+        # ``gpu_available`` indicates whether GPU resources are expected to be
+        # used. The previous implementation misspelled this attribute as
+        # ``gpu_avaiable`` which leads to an inaccessible flag from outside
+        # the class.  Keep a copy for backward compatibility while using the
+        # correct name internally.
+        self.gpu_available = gpu_available and check_gpus()
+        # ``gpu_avaiable`` is kept for compatibility with potential external
+        # references.
+        self.gpu_avaiable = self.gpu_available
         self.specified_device = specified_device
-        if self.gpu_avaiable:
+        if self.gpu_available:
             self.gpus = self._query_gpus()
             for gpu in self.gpus:
                 gpu['allocated'] = False
